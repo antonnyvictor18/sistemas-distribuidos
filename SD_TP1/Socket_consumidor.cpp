@@ -104,6 +104,6 @@ int main() {
 	close(clientSocket);
 	close(serverSocket);
     
-	std::cout << "Consumidor: Encerrando. Total de números recebidos: " << count << std::endl;
+	std::cout << "Consumidor: Encerrado ! \nTotal de números recebidos: " << count << std::endl;
 	return 0;
 }

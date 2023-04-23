@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <unistd.h>
 #include <arpa/inet.h>
+using namespace std;
 
 const int BUFFER_SIZE = 20; // Tamanho fixo do buffer para representação numérica
 
@@ -53,11 +54,12 @@ int main() {
         }
         std::string result(buffer);
         std::cout << "Produtor: Número gerado: " << num << ". Resultado recebido: " << result << std::endl;
-        count++;
+        
         if (result == "Finalize") {
-            std::cout << "Produtor: Recebi o pedido de encerramento.\n Encerrando..." << std::endl;
+            std::cout << "Produtor: Recebi o pedido de encerramento.\nEncerrando..." << std::endl;
             break; // Encerra o loop quando receber "Nao primo" como resultado
         }
+        count++;
     }
 
     // Envia 0 para terminar o consumidor
@@ -69,6 +71,6 @@ int main() {
 
     // Fecha o socket e termina o programa
     close(clientSocket);
-    std::cout << "Produtor: Encerrando. Total de números gerados: " << count << std::endl;
+    std::cout << "Produtor: Encerrado ! \nTotal de números gerados: " << count << std::endl;
     return 0;
 }
