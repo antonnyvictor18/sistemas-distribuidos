@@ -15,10 +15,10 @@ int main() {
     // Criação do socket
     clientSocket = socket(AF_INET, SOCK_STREAM, 0);
     if (clientSocket == -1) {
-        perror("Erro ao criar socket");
-        return 1;
+        cerr << "Erro ao criar socket" << endl;
+        return EXIT_FAILURE;
     }
-
+    
     // Configuração do endereço do servidor
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1"); // Endereço IP do servidor
@@ -26,37 +26,38 @@ int main() {
 
     // Conexão ao servidor
     if (connect(clientSocket, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) == -1) {
-        perror("Erro ao conectar ao servidor");
+        cerr << "Erro ao conectar ao servidor" << endl;
         close(clientSocket);
-        return 1;
+        return EXIT_FAILURE;
     }
-    std::cout << "Conexão estabelecida com o consumidor!" << std::endl;
+    cout << "Conexão estabelecida com o consumidor!" << endl;
 
     // Loop para gerar e enviar números
     int num;
     int count = 0;
     while (true) {
         // Solicita ao usuário para digitar um número
-        std::cout << "Produtor: Digite um número (0 para sair): ";
-        std::cin >> num;
+        cout << "Produtor: Digite um número (0 para sair): " << endl;
+        cin >> num;
 
         // Envia número ao consumidor
         if (send(clientSocket, std::to_string(num).c_str(), BUFFER_SIZE, 0) == -1) {
-            perror("Erro ao enviar número");
+            cerr << "Erro ao enviar número"<< endl;
             close(clientSocket);
-            return 1;
+            return EXIT_FAILURE;
         }
         // Aguarda resultado do consumidor
         if (recv(clientSocket, buffer, BUFFER_SIZE, 0) == -1) {
-            perror("Erro ao receber resultado");
+            cerr << "Erro ao receber resultado" << endl;
             close(clientSocket);
-            return 1;
+            return EXIT_FAILURE;
         }
-        std::string result(buffer);
-        std::cout << "Produtor: Número gerado: " << num << ". Resultado recebido: " << result << std::endl;
+
+        string result(buffer);
+        cout << "Produtor: Número gerado: " << num << ". Resultado recebido: " << result << endl;
         
         if (result == "Finalize") {
-            std::cout << "Produtor: Recebi o pedido de encerramento.\nEncerrando..." << std::endl;
+            cout << "Produtor: Recebi o pedido de encerramento.\nEncerrando..." << endl;
             break; // Encerra o loop quando receber "Nao primo" como resultado
         }
         count++;
@@ -64,13 +65,13 @@ int main() {
 
     // Envia 0 para terminar o consumidor
     if (send(clientSocket, "0", BUFFER_SIZE, 0) == -1) {
-        perror("Erro ao enviar número de término");
+        cerr << "Erro ao enviar número de término" << endl;
         close(clientSocket);
-        return 1;
+        return EXIT_FAILURE;
     }
 
     // Fecha o socket e termina o programa
     close(clientSocket);
-    std::cout << "Produtor: Encerrado ! \nTotal de números gerados: " << count << std::endl;
-    return 0;
+    cout << "Produtor: Encerrado ! \nTotal de números gerados: " << count << endl;
+    return EXIT_SUCCESS;
 }
