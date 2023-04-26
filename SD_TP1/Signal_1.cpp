@@ -6,14 +6,17 @@
 using namespace std;
 
 int pid;
-int sinal = 1;
+int sinal;
 
 int main(int qtd_parametros, char *parametros[]) {
     // Verifica se o número correto de argumentos foi passado
-    if (qtd_parametros != 2) {
+    if (qtd_parametros != 3) {
         cerr << "Número incorreto de argumentos\n";
         return EXIT_FAILURE;
     }
+
+    // Converte o sinal para inteiro
+    sinal = stoi(parametros[2]);
 
     // Converte o número do processo destino para inteiro
     pid = stoi(parametros[1]);

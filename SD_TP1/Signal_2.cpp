@@ -1,62 +1,67 @@
 #include <iostream>
 #include <csignal>
 #include <unistd.h>
+#include <chrono>
 using namespace std;
 
-bool isRunning = true; // Variável de controle para saber se o programa está em execução
+bool isRunning = true; // Variável de controle para saber se o programa está em execução2
+int count = 0; // variavel contadora para mostrar processo em execução ou não
+auto time_start = std::chrono::high_resolution_clock::now();
 
 void signalHandler(int sinal) {
-    if (sinal == 0){
+
+    if (sinal == 1){
         cout << "Sinal " << sinal << " recebido. \nMensagem: Processo finalizado." << endl;
         exit(0); // Termina a execução do programa
     }
-    else if (sinal  == 1){
-        cout << "Sinal " << sinal << " recebido.\nMensagem: Processo pausado." << endl;
-        isRunning = false; // Define a variável de controle como false para parar o programa
+    else if (sinal  == 2){
+        cout << "Olá, recebi o sinal " << sinal << "! O pid é " << getpid() << endl;
+        // cout << "Sinal " << sinal << " recebido.\nMensagem: Processo pausado." << endl;
+        // isRunning = false; // Define a variável de controle como false para parar o programa
     }
-    else{
-        cout << "Sinal " << sinal <<  "recebido. \nMensagem: Processo em execução..." << endl;
+    else if (sinal == 3) {
+        auto time_now = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::seconds>(time_now - time_start);
+        cout << "Olá, recebi o sinal " << sinal << "! O processo começou a executar há " << duration.count() << " segundos" << endl;
+        
+        // cout << "Sinal " << sinal <<  "recebido. \nMensagem: Processo em execução..." << endl;
+        // isRunning = true;
     }
-    
 }
 
 
 int main(int argc, char *argv[]) {
+    
     if (argc != 2) {
         cerr << "Uso: " << argv[0] << " <modo_espera>" << endl;
         return 1;
     }
 
-    isRunning = true;
+    // isRunning = true;
     string modoEspera = argv[1]; // Modo de espera: "busy" ou "blocking"
 
-    // Registra as funções de manipulação de sinais
-    signal(0, signalHandler);
-    signal(1, signalHandler);
-    signal(2, signalHandler);
+    if ((modoEspera != "busy") && (modoEspera != "blocking")) {
+        cerr << "Erro: Modo de espera inválido. Use 'busy' ou 'blocking'." << endl;
+        return 1;  
+    }
 
     cout << "PID do processo: " << getpid() << endl;
     cout << "Modo de espera: " << modoEspera << endl;
+    cout << "Sinais Possíveis:\n1 (encerra o processo)\n2 (informa o pid)\n3 (informa o tempo de execução)\n" << endl;
 
-    // Aguarda a chegada de sinais
-    if (modoEspera == "busy") {
-        while (isRunning) {
-            sleep(1);
-            cout << "Busy wait: esperando os sinais chegarem..."<< endl;
-            sleep(1);
+    // Registra as funções de manipulação de sinais
+    signal(1, signalHandler);
+    signal(2, signalHandler);
+    signal(3, signalHandler);
+
+    while (true) {
+        // Aguarda a chegada de sinais
+        if (modoEspera == "busy") {
+            sleep(3);
+            cout << count << endl;
+            count ++;
         }
-    } else if (modoEspera == "blocking") {
-        // Blocking wait: pausa o processo até que um sinal seja recebido
-        while (isRunning) {
-            cout << "Processo pausado. Esperando sinais"<<endl;
-            pause();
-            cout << "Processo em execução novamente"<<endl;
-        }
-    } else {
-        cerr << "Erro: Modo de espera inválido. Use 'busy' ou 'blocking'." << endl;
-        return 1;
     }
 
-    main(argc, argv);
     return 0;
 }
