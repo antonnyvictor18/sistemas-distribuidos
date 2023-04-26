@@ -10,6 +10,7 @@ int sinal;
 
 int main(int qtd_parametros, char *parametros[]) {
     // Verifica se o número correto de argumentos foi passado
+    
     if (qtd_parametros != 3) {
         cerr << "Número incorreto de argumentos\n";
         return EXIT_FAILURE;
@@ -23,9 +24,9 @@ int main(int qtd_parametros, char *parametros[]) {
 
     // Verifica se o processo destino existe
     if (kill(pid, sinal) != 0) {
-        cerr << "Processo destino não existe\n";
+        cerr << "Processo destino não existe" << endl;
         return EXIT_FAILURE;
     }   
-    cout << "Sinal enviado\n";
+    cout << "Sinal enviado" <<endl;
     return EXIT_SUCCESS;
 }
