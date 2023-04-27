@@ -29,11 +29,9 @@ int main(int argc, char *argv[]) {
     int qtd_numeros_gerados;
     int pipefd[2];
     pid_t pid;
-    int num = 0;
+    int num = 1;
     int num_lido = 0;
     qtd_numeros_gerados = stoi(argv[1]);
-
-    
 
     if (pipe(pipefd) == -1) {
         cerr << "Erro ao criar o pipe" << endl;
@@ -76,16 +74,14 @@ int main(int argc, char *argv[]) {
 
         srand(time(0)); // Seed para geração de números aleatórios
         for (int i = 0; i < qtd_numeros_gerados; i++) {
-          
-            int delta = rand() % 100 + 1; // Gerar delta aleatório entre 1 e 100
-            num += delta; // Calcular o próximo número
 
             cout << "Produtor: Número Gerado: " << num << endl;
             if (write(pipefd[1], &num, sizeof(int)) == -1) {
                 cerr << "Erro ao escrever no pipe"<<endl;
-                exit(1);
+                exit(1);          
             }
-
+            int delta = rand() % 100 + 1; // Gerar delta aleatório entre 1 e 100
+            num += delta; // Calcular o próximo número
         }
 
         num = 0; // Enviar número 0 para indicar o fim da produção
