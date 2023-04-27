@@ -1,5 +1,6 @@
 #include <iostream>
 #include <csignal>
+#include <signal.h>
 #include <unistd.h>
 #include <chrono>
 using namespace std;
@@ -16,16 +17,11 @@ void signalHandler(int sinal) {
     }
     else if (sinal  == 2){
         cout << "Olá, recebi o sinal " << sinal << "! O pid é " << getpid() << endl;
-        // cout << "Sinal " << sinal << " recebido.\nMensagem: Processo pausado." << endl;
-        // isRunning = false; // Define a variável de controle como false para parar o programa
     }
     else if (sinal == 3) {
         auto time_now = std::chrono::high_resolution_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::seconds>(time_now - time_start);
         cout << "Olá, recebi o sinal " << sinal << "! O processo começou a executar há " << duration.count() << " segundos" << endl;
-        
-        // cout << "Sinal " << sinal <<  "recebido. \nMensagem: Processo em execução..." << endl;
-        // isRunning = true;
     }
 }
 
@@ -36,6 +32,9 @@ int main(int argc, char *argv[]) {
         cerr << "Uso: " << argv[0] << " <modo_espera>" << endl;
         return 1;
     }
+
+    sigset_t set;
+    int sig;
 
     // isRunning = true;
     string modoEspera = argv[1]; // Modo de espera: "busy" ou "blocking"
@@ -54,14 +53,14 @@ int main(int argc, char *argv[]) {
     signal(2, signalHandler);
     signal(3, signalHandler);
 
-    while (true) {
-        // Aguarda a chegada de sinais
-        if (modoEspera == "busy") {
-            sleep(3);
-            cout << count << endl;
-            count ++;
-        }
+    if (modoEspera == "blocking") {
+        sigwait(&set, &sig);
     }
 
+    while(true) {
+        sleep(2);
+        cout << count << endl;
+        count ++;            
+    }
     return 0;
 }
