@@ -53,11 +53,10 @@ int main(int argc, char *argv[]) {
     signal(2, signalHandler);
     signal(3, signalHandler);
 
-    if (modoEspera == "blocking") {
-        sigwait(&set, &sig);
-    }
-
     while(true) {
+        if (modoEspera == "blocking") {
+            sigwait(&set, &sig);
+        }
         sleep(2);
         cout << count << endl;
         count ++;            
