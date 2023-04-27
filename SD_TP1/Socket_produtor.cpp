@@ -5,9 +5,20 @@
 #include <arpa/inet.h>
 using namespace std;
 
+
+
 const int BUFFER_SIZE = 20; // Tamanho fixo do buffer para representação numérica
 
-int main() {
+int main(int argc, char *argv[]) {
+
+    // Verificar se o número de argumentos está correto
+    if (argc != 2) {
+        cout << "O programa: " << argv[0] << " não tem 2 argumentos"<< endl;
+        exit(1);
+    }
+
+    int number_of_sendings = stoi(argv[1]);
+
     int clientSocket;
     struct sockaddr_in serverAddr;
     char buffer[BUFFER_SIZE];
@@ -33,13 +44,18 @@ int main() {
     cout << "Conexão estabelecida com o consumidor!" << endl;
 
     // Loop para gerar e enviar números
-    int num;
-    int count = 0;
-    while (true) {
-        // Solicita ao usuário para digitar um número
-        cout << "Produtor: Digite um número (0 para sair): " << endl;
-        cin >> num;
+    int num = 1;
+    int delta;
+    srand(time(0));
 
+     for (int i = 0; i <= number_of_sendings; i++) {
+
+        if (i == number_of_sendings) {
+            num = 0;
+        }
+
+        cout << "Produtor enviando numero: " << num << endl;
+        
         // Envia número ao consumidor
         if (send(clientSocket, std::to_string(num).c_str(), BUFFER_SIZE, 0) == -1) {
             cerr << "Erro ao enviar número"<< endl;
@@ -55,23 +71,13 @@ int main() {
 
         string result(buffer);
         cout << "Produtor: Número gerado: " << num << ". Resultado recebido: " << result << endl;
-        
-        if (result == "Finalize") {
-            cout << "Produtor: Recebi o pedido de encerramento.\nEncerrando..." << endl;
-            break; // Encerra o loop quando receber "Nao primo" como resultado
-        }
-        count++;
-    }
+        sleep(2);
 
-    // Envia 0 para terminar o consumidor
-    if (send(clientSocket, "0", BUFFER_SIZE, 0) == -1) {
-        cerr << "Erro ao enviar número de término" << endl;
-        close(clientSocket);
-        return EXIT_FAILURE;
+        int delta = rand() % 100 + 1; // Gerar delta aleatório entre 1 e 100
+        num += delta; // Calcular o próximo número
     }
 
     // Fecha o socket e termina o programa
     close(clientSocket);
-    cout << "Produtor: Encerrado ! \nTotal de números gerados: " << count << endl;
     return EXIT_SUCCESS;
 }
