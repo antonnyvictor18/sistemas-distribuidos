@@ -93,6 +93,7 @@ void* produtor(void* thread_data) {
     while(1) {
         sem_wait(&empty);
         sem_wait(&mutex);
+        check_consumed(&consumed, m);
         write_value(n, vector);
         update_status(status_vector, m, 1);
         sem_post(&mutex);
@@ -107,9 +108,10 @@ void* consumidor(void* thread_data) {
     int* vector = data->vector;
     int* status_vector = data->status_vector;
 
-    while(check_consumed(&consumed, m)) {
+    while(1) {
         sem_wait(&full);
         sem_wait(&mutex);
+        check_consumed(&consumed, m);
         read_value(n, vector);
         update_status(status_vector, m, -1);
         update_consumed(&consumed);
