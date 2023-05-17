@@ -39,6 +39,7 @@ void write_value(int size, int* vector) {
             int num = (rand() % 10000000) + 1;
             vector[i] = num;
             printf("Número %d produzido na posicao %d.\n", num, i);
+            break;
         }
     }
 }
