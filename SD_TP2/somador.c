@@ -83,8 +83,7 @@ int main() {
     fprintf(file, "exec n k time\n");
 
     for (int exec = 0; exec < 10; exec ++) {
-        for (int n = 10000000; n <= 1000000000; n *= 10) {
-
+        for (int n = 1000000; n <= 100000000; n *= 10) {
             for (int k = 1; k <= 256; k*=2) {
 
                 int* vector = (int*)malloc(n * sizeof(int));
@@ -96,10 +95,6 @@ int main() {
 
                 // Inicializando o vetor e preenchendo com números aleatórios
                 fill_with_random_numbers(n, vector);
-                // for (int i = 0; i < n; i++) {
-                //     printf("%d ", vector[i]);
-                // }         
-                // printf("\n");
 
                 // Cria as threads
                 start_time = clock();
